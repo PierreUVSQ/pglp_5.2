@@ -8,7 +8,7 @@ public class GroupeDao extends Dao<Groupe> {
 
   protected GroupeDao() throws SQLException {
   }
-
+  public static int compteur = 0;
   @Override
   public Groupe create(Groupe obj) {
     /*try (ObjectOutputStream out =
@@ -17,8 +17,35 @@ public class GroupeDao extends Dao<Groupe> {
     } catch (IOException ioe) {
 
     }*/
+    this.connect();
 
+    try {
+      this.stmt = connect.createStatement();
+      String personnelInsert =
+              "INSERT INTO Groupe(gid, nom) values("
+                      + this.compteur
+                      + ",'"
+                      + obj.getNom()
+                      + "')";
+      stmt.execute(personnelInsert);
+      for (Equipe e : obj) {
 
+        String EquipeInsert =
+                "INSERT INTO Telephone(id, tel) VALUES("
+                        + this.compteur
+                        + ","
+  //                      + Integer.parseInt(e)
+                        + ")";
+
+//        stmt.execute(telInsert);
+
+      }
+      this.compteur++;
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    this.disconnect();
 
     return obj;
   }

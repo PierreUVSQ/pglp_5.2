@@ -39,11 +39,11 @@ public class AppTest {
       drop = "DROP TABLE Personnel";
       stmt.execute(drop);
 
-      String createTable = "CREATE TABLE Personnel( persid int primary key not null, nom varchar(50), prenom  varchar(50), fonction varchar(50),naissance DATE)";
+      String createTable = "CREATE TABLE Personnel(nom varchar(50) PRIMARY KEY NOT NULL, prenom  varchar(50), fonction varchar(50),naissance DATE)";
       stmt.execute(createTable);
-      createTable = "CREATE TABLE Telephone (id int, tel int, PRIMARY KEY(id, tel), FOREIGN KEY(id) REFERENCES Personnel(persid))";
+      createTable = "CREATE TABLE Telephone (nom varchar(50), tel int, PRIMARY KEY(nom, tel), FOREIGN KEY(nom) REFERENCES Personnel(nom))";
       stmt.execute(createTable);
-      createTable = "CREATE TABLE Groupe( gid int primary key not null, nom varchar(50))";
+      createTable = "CREATE TABLE Groupe( nom varchar(50) PRIMARY KEY NOT NULL)";
       stmt.execute(createTable);
       connect.close();
     } catch (ClassNotFoundException | SQLException e) {
@@ -168,6 +168,7 @@ public class AppTest {
   @Test
   public void testGroupeDAO() {
 
+    int cpt = GroupeDao.compteur;//compteur d'adresse
     Groupe g = new Groupe("toto");
     List<String> tmp = new ArrayList<>();
     tmp.add("0000000");
@@ -198,7 +199,7 @@ public class AppTest {
     try (Dao ap = new PersonnelDao()) {
 
       ap.create(p1);
-     Personnel test = (Personnel) ap.find("0");
+     Personnel test = (Personnel) ap.find("Smith");
       assertEquals("Smith", test.getNom());
       for (String e : test.getTel()) {
         System.out.println(e);

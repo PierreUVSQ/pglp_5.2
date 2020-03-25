@@ -10,7 +10,7 @@ public class PersonnelDao extends Dao<Personnel> {
 
   protected PersonnelDao() throws SQLException {}
 
-  int compteur = 0;
+  public static int compteur = 0;
 
   @Override
   public Personnel create(Personnel obj) {
@@ -25,9 +25,8 @@ public class PersonnelDao extends Dao<Personnel> {
     try {
       this.stmt = connect.createStatement();
       String personnelInsert =
-              "INSERT INTO Personnel(persid, nom, prenom, fonction, naissance) values("
-                      + this.compteur
-                      + ",'"
+              "INSERT INTO Personnel(nom, prenom, fonction, naissance) values("
+                      + "'"
                       + obj.getNom()
                       + "','"
                       + obj.getPrenom()
@@ -40,9 +39,9 @@ public class PersonnelDao extends Dao<Personnel> {
       for (String e : obj.getTel()) {
 
         String telInsert =
-                "INSERT INTO Telephone(id, tel) VALUES("
-                        + this.compteur
-                        + ","
+                "INSERT INTO Telephone(nom, tel) VALUES('"
+                        + obj.getNom()
+                        + "',"
                         + Integer.parseInt(e)
                         + ")";
 
@@ -70,8 +69,8 @@ public class PersonnelDao extends Dao<Personnel> {
     }*/
     this.connect();
 
-    String select = "SELECT * FROM Personnel P WHERE P.persid = " + Integer.parseInt(id);
-    String selectTel = "SELECT T.tel FROM Telephone T WHERE T.id = " + Integer.parseInt(id);
+    String select = "SELECT * FROM Personnel P WHERE P.nom = '" + id + "'";
+    String selectTel = "SELECT T.tel FROM Telephone T WHERE T.nom = '" + id + "'";
     try {
       this.stmt = connect.createStatement();
       stmt.execute(selectTel);

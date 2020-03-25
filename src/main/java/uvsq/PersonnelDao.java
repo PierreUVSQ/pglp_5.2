@@ -24,41 +24,36 @@ public class PersonnelDao extends Dao<Personnel> {
 
     try {
       this.stmt = connect.createStatement();
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
-    String personnelInsert =
-        "INSERT INTO Personnel(persid, nom, prenom, fonction, naissance) values("
-            + this.compteur
-            + ",'"
-            + obj.getNom()
-            + "','"
-            + obj.getPrenom()
-            + "','"
-            + obj.getFonction()
-            + "','"
-            + java.sql.Date.valueOf(obj.getLocalDate())
-            + "')";
-    try {
+      String personnelInsert =
+              "INSERT INTO Personnel(persid, nom, prenom, fonction, naissance) values("
+                      + this.compteur
+                      + ",'"
+                      + obj.getNom()
+                      + "','"
+                      + obj.getPrenom()
+                      + "','"
+                      + obj.getFonction()
+                      + "','"
+                      + java.sql.Date.valueOf(obj.getLocalDate())
+                      + "')";
       stmt.execute(personnelInsert);
+      for (String e : obj.getTel()) {
+
+        String telInsert =
+                "INSERT INTO Telephone(id, tel) VALUES("
+                        + this.compteur
+                        + ","
+                        + Integer.parseInt(e)
+                        + ")";
+
+          stmt.execute(telInsert);
+
+      }
+      this.compteur++;
     } catch (SQLException e) {
       e.printStackTrace();
     }
-    for (String e : obj.getTel()) {
 
-      String telInsert =
-          "INSERT INTO Telephone(id, tel) VALUES("
-              + this.compteur
-              + ","
-              + Integer.parseInt(e)
-              + ")";
-      try {
-        stmt.execute(telInsert);
-      } catch (SQLException ex) {
-        ex.printStackTrace();
-      }
-    }
-    this.compteur++;
     this.disconnect();
     return obj;
   }

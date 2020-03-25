@@ -34,16 +34,7 @@ public class AppTest {
       Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
       connect = DriverManager.getConnection("jdbc:derby:test;create=true");
       stmt = connect.createStatement();
-    } catch (ClassNotFoundException | SQLException e) {
-      e.printStackTrace();
-      try {
-        connect.close();
-      } catch (SQLException ex) {
-        ex.printStackTrace();
-      }
-    }
-    String drop = "DROP TABLE Telephone";
-    try {
+      String drop = "DROP TABLE Telephone";
       stmt.execute(drop);
       drop = "DROP TABLE Personnel";
       stmt.execute(drop);
@@ -52,11 +43,17 @@ public class AppTest {
       stmt.execute(createTable);
       createTable = "CREATE TABLE Telephone (id int, tel int, PRIMARY KEY(id, tel), FOREIGN KEY(id) REFERENCES Personnel(persid))";
       stmt.execute(createTable);
+      createTable = "CREATE TABLE Groupe( gid int primary key not null, nom varchar(50))";
+      stmt.execute(createTable);
       connect.close();
-    } catch (SQLException e) {
+    } catch (ClassNotFoundException | SQLException e) {
       e.printStackTrace();
+      try {
+        connect.close();
+      } catch (SQLException ex) {
+        ex.printStackTrace();
+      }
     }
-
 
 
   }
@@ -209,6 +206,11 @@ public class AppTest {
 
     } catch (Exception e) {
       e.printStackTrace();
+      try {
+        connect.close();
+      } catch (SQLException ex) {
+        ex.printStackTrace();
+      }
     }
   }
 }

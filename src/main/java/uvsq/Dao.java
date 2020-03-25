@@ -3,17 +3,43 @@ package uvsq;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 
-public abstract class Dao<T> {
+public abstract class Dao<T> implements AutoCloseable{
 
-  Connection connect = DriverManager.getConnection("jdbc:derby:test;create=true");
+  public Connection connect = null;
 
-  protected Dao() throws SQLException {
-  }
+  public Statement stmt = null;
 
   public abstract T create(T obj);
 
   public abstract T find(String id);
 
   public abstract void delete(String file);
+
+  public void connect(){
+
+    try {
+      Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
+      connect = DriverManager.getConnection("jdbc:derby:test;create=true");
+    } catch (ClassNotFoundException | SQLException e) {
+      e.printStackTrace();
+      try {
+        connect.close();
+      } catch (SQLException ex) {
+        ex.printStackTrace();
+      }
+    }
+
+  }
+
+  public void disconnect(){
+
+    try {
+      connect.close();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+  }
+
 }

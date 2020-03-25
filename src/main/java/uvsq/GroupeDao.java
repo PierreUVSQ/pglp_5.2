@@ -49,4 +49,9 @@ public class GroupeDao extends Dao<Groupe> {
       e.printStackTrace();
     }
   }
+
+  @Override
+  public void close() throws Exception {
+    super.connect.close();
+  }
 }

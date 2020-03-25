@@ -48,4 +48,9 @@ public class AnnuaireDao extends Dao<Annuaire> {
       e.printStackTrace();
     }
   }
+
+  @Override
+  public void close() throws Exception {
+    super.connect.close();
+  }
 }

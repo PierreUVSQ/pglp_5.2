@@ -70,7 +70,16 @@ public final class Personnel extends Equipe implements Serializable {
     return this.dateNaissance;
   }
 
+  public String getPrenom(){
+    return this.prenom;
+  }
+
+  public String getFonction(){
+    return this.fonction;
+  }
+
   public void printNom() {
     System.out.println(this.nom);
   }
 }
+

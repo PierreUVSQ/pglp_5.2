@@ -1,17 +1,22 @@
 package uvsq;
 
 import java.io.*;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
-public class GroupeDao implements Dao<Groupe> {
+public class GroupeDao extends Dao<Groupe> {
+
+  protected GroupeDao() throws SQLException {
+  }
 
   @Override
   public Groupe create(Groupe obj) {
-    try (ObjectOutputStream out =
+    /*try (ObjectOutputStream out =
         new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream("groupe")))) {
       out.writeObject(obj);
     } catch (IOException ioe) {
 
-    }
+    }*/
     return obj;
   }
 

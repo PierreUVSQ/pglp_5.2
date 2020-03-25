@@ -1,14 +1,19 @@
 package uvsq;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
-public interface Dao<T> {
+public abstract class Dao<T> {
 
-  Connection connect = null;
+  Connection connect = DriverManager.getConnection("jdbc:derby:test;create=true");
 
-  public T create(T obj);
+  protected Dao() throws SQLException {
+  }
 
-  public T find(String id);
+  public abstract T create(T obj);
 
-  public void delete(String file);
+  public abstract T find(String id);
+
+  public abstract void delete(String file);
 }

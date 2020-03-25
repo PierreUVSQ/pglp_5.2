@@ -1,8 +1,12 @@
 package uvsq;
 
 import java.io.*;
+import java.sql.SQLException;
 
-public class PersonnelDao implements Dao<Personnel> {
+public class PersonnelDao extends Dao<Personnel> {
+
+  protected PersonnelDao() throws SQLException {
+  }
 
   @Override
   public Personnel create(Personnel obj) {

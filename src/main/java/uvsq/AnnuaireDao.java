@@ -1,8 +1,12 @@
 package uvsq;
 
 import java.io.*;
+import java.sql.SQLException;
 
-public class AnnuaireDao implements Dao<Annuaire> {
+public class AnnuaireDao extends Dao<Annuaire> {
+
+  protected AnnuaireDao() throws SQLException {
+  }
 
   @Override
   public Annuaire create(Annuaire obj) {

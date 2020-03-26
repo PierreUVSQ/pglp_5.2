@@ -1,32 +1,23 @@
 package uvsq;
-
-import org.apache.bcel.generic.INSTANCEOF;
-
-import java.io.*;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+
 
 public class GroupeDao extends Dao<Groupe> {
 
   private Dao ag;
 
   protected GroupeDao() {
-    try {
-      ag = DaoFactory.getPersonnelDao();
-    } catch (SQLException e) {
-      System.exit(0);
-    }
+
+      ag = Annuaire.createChoisiDaoFactory("SGBD").createPersonnelDao();
+
   }
 
   @Override
   public Groupe create(Groupe obj) {
 
     this.connect();
-
     try (PreparedStatement personnelInsert =
             this.connect.prepareStatement("INSERT INTO Groupe(nom) values(?)");
         PreparedStatement EquipeInsert =
@@ -46,7 +37,7 @@ public class GroupeDao extends Dao<Groupe> {
           EquipeInsert.executeUpdate();
 
         } else if (e instanceof Groupe) {
-          DaoFactory.getGroupeDao().create((Groupe) e);
+          Annuaire.createChoisiDaoFactory("SGBD").createGroupeDao().create((Groupe)e);
           EquipeInsertG.setString(1, obj.getNom());
           EquipeInsertG.setString(2, e.getNom());
         }

@@ -1,11 +1,7 @@
 package uvsq;
-
-import java.io.*;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import static java.lang.System.exit;
 
 public class AnnuaireDao extends Dao<Annuaire> {
 
@@ -13,25 +9,14 @@ public class AnnuaireDao extends Dao<Annuaire> {
   private Dao aGroupe;
 
   protected AnnuaireDao() {
-    try {
-      ag = DaoFactory.getPersonnelDao();
-      aGroupe = DaoFactory.getGroupeDao();
-    } catch (SQLException e) {
-      e.printStackTrace();
-      exit(0);
-    }
+
+      ag = Annuaire.createChoisiDaoFactory("SGBD").createPersonnelDao();
+      aGroupe = Annuaire.createChoisiDaoFactory("SGBD").createGroupeDao();
 
   }
 
   @Override
   public Annuaire create(Annuaire obj) {
-    /*try (ObjectOutputStream out =
-        new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream("annuaire")))) {
-      out.writeObject(obj);
-    } catch (IOException ioe) {
-
-    }*/
-
     this.connect();
 
     try (PreparedStatement EquipeInsert1 =
@@ -45,19 +30,11 @@ public class AnnuaireDao extends Dao<Annuaire> {
           this.ag.create((Personnel) e);
           EquipeInsert1.setString(1, e.getNom());
           EquipeInsert1.executeUpdate();
-          // final String EquipeInsert = "INSERT INTO AnnuairePersonnel(nom) VALUES('" + e.getNom()
-          // + "')";
-
-          // stmt.execute(EquipeInsert);
 
         } else if (e instanceof Groupe) {
-          DaoFactory.getGroupeDao().create((Groupe) e);
+          Annuaire.createChoisiDaoFactory("SGBD").createGroupeDao().create((Groupe)e);
           EquipeInsert2.setString(1, e.getNom());
           EquipeInsert2.executeUpdate();
-          // final String EquipeInsert = "INSERT INTO AnnuaireGroupe(gnom) VALUES('" + e.getNom() +
-          // "')";
-
-          // stmt.execute(EquipeInsert);
         }
       }
     } catch (SQLException e) {
@@ -71,16 +48,7 @@ public class AnnuaireDao extends Dao<Annuaire> {
   @Override
   public Annuaire find(String id) {
     Annuaire p = Annuaire.getInstance();
-    /*try (ObjectInputStream in =
-        new ObjectInputStream(new BufferedInputStream(new FileInputStream(id)))) {
-      p = (Annuaire) in.readObject();
-
-    } catch (ClassNotFoundException | IOException e) {
-      e.printStackTrace();
-    }*/
     this.connect();
-
-    // String select = "SELECT * FROM Groupe G WHERE G.nom = '" + id + "'";
     String selectItGroupe = "SELECT * FROM AnnuaireGroupe AG ";
     String selectItPersonnel = "SELECT * FROM AnnuairePersonnel AP";
     try {

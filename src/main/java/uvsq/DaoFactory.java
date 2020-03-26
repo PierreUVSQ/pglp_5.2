@@ -1,20 +1,18 @@
 package uvsq;
 
-import java.sql.SQLException;
+public class DaoFactory implements AbstractDaoFactory {
 
-public class DaoFactory {
-
-  public static Dao<Annuaire> getAnnuaireDao() throws SQLException {
+  public Dao<Annuaire> createAnnuaireDao() {
 
     return new AnnuaireDao();
   }
 
-  public static Dao<Groupe> getGroupeDao() throws SQLException {
+  public Dao<Groupe> createGroupeDao() {
 
     return new GroupeDao();
   }
 
-  public static Dao<Personnel> getPersonnelDao() throws SQLException {
+  public Dao<Personnel> createPersonnelDao() {
 
     return new PersonnelDao();
   }

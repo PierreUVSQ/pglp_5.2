@@ -4,10 +4,9 @@ import java.sql.SQLException;
 
 public interface AbstractDaoFactory {
 
-    AnnuaireDao createAnnuaireDao();
-    GroupeDao createGroupeDao();
-    PersonnelDao createPersonnelDao();
-
+    Dao<Annuaire> createAnnuaireDao();
+    Dao<Groupe> createGroupeDao();
+    Dao<Personnel> createPersonnelDao();
 
 
 

@@ -21,6 +21,7 @@ import static org.junit.Assert.*;
 public class AppTest {
   /** Rigorous Test :-) */
   public static Connection connect = null;
+
   public static Statement stmt = null;
   public static boolean first = true;
   static File index = new File("test");
@@ -28,11 +29,10 @@ public class AppTest {
   @BeforeClass
   public static void init() {
 
-
     try {
-        Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
-        connect = DriverManager.getConnection("jdbc:derby:test;create=true");
-        stmt = connect.createStatement();
+      Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
+      connect = DriverManager.getConnection("jdbc:derby:test;create=true");
+      stmt = connect.createStatement();
       /*
       String drop = "DROP TABLE Telephone";
       stmt.execute(drop);
@@ -47,19 +47,25 @@ public class AppTest {
       drop = "DROP TABLE AnnuairePersonnel";
       stmt.execute(drop);*/
 
-      String createTable = "CREATE TABLE Personnel(nom varchar(50) PRIMARY KEY NOT NULL, prenom  varchar(50), fonction varchar(50),naissance DATE)";
+      String createTable =
+          "CREATE TABLE Personnel(nom varchar(50) PRIMARY KEY NOT NULL, prenom  varchar(50), fonction varchar(50),naissance DATE)";
       stmt.execute(createTable);
-      createTable = "CREATE TABLE Telephone (nom varchar(50), tel int, PRIMARY KEY(nom, tel), FOREIGN KEY(nom) REFERENCES Personnel(nom) ON DELETE CASCADE )";
+      createTable =
+          "CREATE TABLE Telephone (nom varchar(50), tel int, PRIMARY KEY(nom, tel), FOREIGN KEY(nom) REFERENCES Personnel(nom) ON DELETE CASCADE )";
       stmt.execute(createTable);
       createTable = "CREATE TABLE Groupe( nom varchar(50) PRIMARY KEY NOT NULL)";
       stmt.execute(createTable);
-      createTable = "CREATE TABLE FaitPartiePersonnel(gnom varchar(50), nom varchar(50), PRIMARY KEY(gnom,nom), FOREIGN KEY (gnom) REFERENCES Groupe(nom) ON DELETE CASCADE, FOREIGN KEY (nom) REFERENCES Personnel(nom) ON DELETE CASCADE)";
+      createTable =
+          "CREATE TABLE FaitPartiePersonnel(gnom varchar(50), nom varchar(50), PRIMARY KEY(gnom,nom), FOREIGN KEY (gnom) REFERENCES Groupe(nom) ON DELETE CASCADE, FOREIGN KEY (nom) REFERENCES Personnel(nom) ON DELETE CASCADE)";
       stmt.execute(createTable);
-      createTable = "CREATE TABLE FaitPartieGroupe(gnom varchar(50), nom varchar(50), PRIMARY KEY(gnom,nom), FOREIGN KEY (gnom) REFERENCES Groupe(nom) ON DELETE CASCADE, FOREIGN KEY (nom) REFERENCES Groupe(nom) ON DELETE CASCADE)";
+      createTable =
+          "CREATE TABLE FaitPartieGroupe(gnom varchar(50), nom varchar(50), PRIMARY KEY(gnom,nom), FOREIGN KEY (gnom) REFERENCES Groupe(nom) ON DELETE CASCADE, FOREIGN KEY (nom) REFERENCES Groupe(nom) ON DELETE CASCADE)";
       stmt.execute(createTable);
-      createTable = "CREATE TABLE AnnuaireGroupe(gnom varchar(50) PRIMARY KEY, FOREIGN KEY (gnom) REFERENCES Groupe(nom) ON DELETE CASCADE)";
+      createTable =
+          "CREATE TABLE AnnuaireGroupe(gnom varchar(50) PRIMARY KEY, FOREIGN KEY (gnom) REFERENCES Groupe(nom) ON DELETE CASCADE)";
       stmt.execute(createTable);
-      createTable = "CREATE TABLE AnnuairePersonnel(nom varchar(50), PRIMARY KEY(nom), FOREIGN KEY (nom) REFERENCES Personnel(nom) ON DELETE CASCADE)";
+      createTable =
+          "CREATE TABLE AnnuairePersonnel(nom varchar(50), PRIMARY KEY(nom), FOREIGN KEY (nom) REFERENCES Personnel(nom) ON DELETE CASCADE)";
       stmt.execute(createTable);
       connect.close();
     } catch (ClassNotFoundException | SQLException e) {
@@ -70,8 +76,6 @@ public class AppTest {
         ex.printStackTrace();
       }
     }
-
-
   }
 
   /**
@@ -94,7 +98,7 @@ public class AppTest {
 
     gg.ajoutMembre(p1);
     gg.ajoutMembre(p2);
-    g2.ajoutMembre( new Personnel.Builder("jsp1", "lp", "class").updatePhoneList(tmp).build());
+    g2.ajoutMembre(new Personnel.Builder("jsp1", "lp", "class").updatePhoneList(tmp).build());
     a.addEquipe(p1);
     a.addEquipe(new Groupe("Groupe1"));
     a.addEquipe(new Groupe("Groupe2"));
@@ -133,7 +137,6 @@ public class AppTest {
     } catch (ClassNotFoundException | IOException e) {
 
     }
-
   }
 
   @Test
@@ -167,26 +170,13 @@ public class AppTest {
     ad.create(a);
 
     Annuaire test = (Annuaire) ad.find("annuaire");
-    for (Equipe e : test){
+    for (Equipe e : test) {
       e.printNom();
     }
-    /*
-    Iterator jsp1 = test.iterator();
-    Iterator jsp2 = a.iterator();
-    Equipe e1;
-    Equipe e2;
-    while (jsp1.hasNext() && jsp2.hasNext()) {
-
-      e1 = (Equipe) jsp1.next();
-      e2 = (Equipe) jsp2.next();
-      assertEquals(e1.getNom(), e2.getNom());
-    }*/
   }
 
   @Test
   public void testGroupeDAO() {
-
-    int cpt = GroupeDao.compteur;//compteur d'adresse
     Groupe g = new Groupe("toto");
     List<String> tmp = new ArrayList<>();
     tmp.add("0000000");
@@ -207,9 +197,8 @@ public class AppTest {
     }
     ag.create(g);
     Groupe test = (Groupe) ag.find("toto");
-    for(Equipe e : test){
+    for (Equipe e : test) {
       e.printNom();
-
     }
     assertEquals("toto", test.getNom());
   }
@@ -218,7 +207,7 @@ public class AppTest {
   public void testPersonnelDAO() {
 
     List<String> tmp = new ArrayList<>();
-    tmp.add("0000000");
+    tmp.add("987654321");
     tmp.add("12345678");
     Personnel p1 =
         new Personnel.Builder("Smith3", "John", "ComputerScienist").updatePhoneList(tmp).build();
@@ -226,7 +215,7 @@ public class AppTest {
     try (Dao ap = new PersonnelDao()) {
 
       ap.create(p1);
-     Personnel test = (Personnel) ap.find("Smith3");
+      Personnel test = (Personnel) ap.find("Smith3");
       assertEquals("Smith3", test.getNom());
       for (String e : test.getTel()) {
         System.out.println(e);
@@ -243,18 +232,20 @@ public class AppTest {
   }
 
   @Test
-  public void testDeletePersonnel(){
+  public void testDeletePersonnel() {
     List<String> tmp = new ArrayList<>();
     tmp.add("0000000");
     tmp.add("12345678");
     Personnel p1 =
-            new Personnel.Builder("SmithDelete", "John", "ComputerScienist").updatePhoneList(tmp).build();
+        new Personnel.Builder("SmithDelete", "John", "ComputerScienist")
+            .updatePhoneList(tmp)
+            .build();
     // Dao ap = null;
     try (Dao ap = new PersonnelDao()) {
 
       ap.create(p1);
       ap.delete("SmithDelete");
-      assertNull( (Personnel)ap.find("SmithDelete"));
+      assertNull((Personnel) ap.find("SmithDelete"));
     } catch (SQLException e) {
       e.printStackTrace();
     } catch (Exception e) {
@@ -263,12 +254,14 @@ public class AppTest {
   }
 
   @Test
-  public void testDeleteGroupe(){
+  public void testDeleteGroupe() {
     List<String> tmp = new ArrayList<>();
     tmp.add("0000000");
     tmp.add("12345678");
     Personnel p1 =
-            new Personnel.Builder("SmithDeleteG", "John", "ComputerScienist").updatePhoneList(tmp).build();
+        new Personnel.Builder("SmithDeleteG", "John", "ComputerScienist")
+            .updatePhoneList(tmp)
+            .build();
     Groupe g = new Groupe("GroupeDelete1");
     g.ajoutMembre(p1);
     g.ajoutMembre(new Groupe("GroupeDelete2"));
@@ -276,7 +269,8 @@ public class AppTest {
 
       ag.create(g);
       ag.delete("GroupeDelete1");
-      assertNull( (Groupe)ag.find("GroupeDelete1"));;
+      assertNull((Groupe) ag.find("GroupeDelete1"));
+      ;
     } catch (SQLException e) {
       e.printStackTrace();
     } catch (Exception e) {
@@ -284,9 +278,8 @@ public class AppTest {
     }
   }
 
-
   @Test
-  public void deleteAnnuaireTest(){
+  public void deleteAnnuaireTest() {
 
     Dao ad = null;
     try {
@@ -302,40 +295,39 @@ public class AppTest {
     tmp.add(tel);
     tmp.add("12345678");
     Personnel p1 =
-            new Personnel.Builder("SmithDeleteAnnuaire", "John", "ComputerScienist").updatePhoneList(tmp).build();
-    Personnel p2 = new Personnel.Builder("pgDeleteAnnuaire", "lp", "class").updatePhoneList(tmp).build();
+        new Personnel.Builder("SmithDeleteAnnuaire", "John", "ComputerScienist")
+            .updatePhoneList(tmp)
+            .build();
+    Personnel p2 =
+        new Personnel.Builder("pgDeleteAnnuaire", "lp", "class").updatePhoneList(tmp).build();
 
     gg.ajoutMembre(p1);
     gg.ajoutMembre(p2);
-    g2.ajoutMembre(new Personnel.Builder("pgDeleteAnnuaire2", "lp", "class").updatePhoneList(tmp).build());
-    a.addEquipe(new Personnel.Builder("pgDeleteAnnuaire3", "lp", "class").updatePhoneList(tmp).build());
+    g2.ajoutMembre(
+        new Personnel.Builder("pgDeleteAnnuaire2", "lp", "class").updatePhoneList(tmp).build());
+    a.addEquipe(
+        new Personnel.Builder("pgDeleteAnnuaire3", "lp", "class").updatePhoneList(tmp).build());
     a.addEquipe(new Groupe("Groupe1DeleteAnnuaire"));
     a.addEquipe(new Groupe("Groupe2DeleteAnnuaire"));
     a.addEquipe(gg);
     a.addEquipe(g2);
     ad.create(a);
     ad.delete("");
-    Annuaire res = (Annuaire)ad.find("");
+    Annuaire res = (Annuaire) ad.find("");
     int i = 0;
-    for(Equipe e : res){
+    for (Equipe e : res) {
       i++;
-
     }
     System.out.println(i);
     assertEquals(0, i, 0);
-
-
   }
 
   @AfterClass
-  public static void after(){
+  public static void after() {
     try {
       FileUtils.deleteDirectory(index);
     } catch (IOException e) {
       System.out.println("Creation du test");
     }
-
-
   }
 }
-

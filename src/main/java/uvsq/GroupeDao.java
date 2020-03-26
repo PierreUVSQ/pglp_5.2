@@ -4,6 +4,7 @@ import org.apache.bcel.generic.INSTANCEOF;
 
 import java.io.*;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ public class GroupeDao extends Dao<Groupe> {
   protected GroupeDao() throws SQLException {
     ag = DaoFactory.getPersonnelDao();
   }
-  public static int compteur = 0;
+
   @Override
   public Groupe create(Groupe obj) {
     /*try (ObjectOutputStream out =
@@ -27,42 +28,30 @@ public class GroupeDao extends Dao<Groupe> {
     }*/
     this.connect();
 
-    try {
+    try (PreparedStatement personnelInsert =
+            this.connect.prepareStatement("INSERT INTO Groupe(nom) values(?)");
+        PreparedStatement EquipeInsert =
+            this.connect.prepareStatement(
+                "INSERT INTO FaitPartiePersonnel(gnom, nom) VALUES(?, ?)");
+        PreparedStatement EquipeInsertG =
+            this.connect.prepareStatement("INSERT INTO FaitPartieGroupe(gnom, nom) VALUES(?, ?)")) {
       this.stmt = connect.createStatement();
-      String personnelInsert =
-              "INSERT INTO Groupe(nom) values('"
-                      + obj.getNom()
-                      + "')";
-      stmt.execute(personnelInsert);
+      personnelInsert.setString(1, obj.getNom());
+      personnelInsert.executeUpdate();
       for (Equipe e : obj) {
 
-        if( e instanceof  Personnel){
+        if (e instanceof Personnel) {
           this.ag.create((Personnel) e);
-          String EquipeInsert =
-                  "INSERT INTO FaitPartiePersonnel(gnom, nom) VALUES('"
-                          + obj.getNom()
-                          + "','"
-                          + e.getNom()
-                          + "')";
+          EquipeInsert.setString(1, obj.getNom());
+          EquipeInsert.setString(2, e.getNom());
+          EquipeInsert.executeUpdate();
 
-          stmt.execute(EquipeInsert);
-
+        } else if (e instanceof Groupe) {
+          DaoFactory.getGroupeDao().create((Groupe) e);
+          EquipeInsertG.setString(1, obj.getNom());
+          EquipeInsertG.setString(2, e.getNom());
         }
-        else if (e instanceof Groupe){
-         DaoFactory.getGroupeDao().create((Groupe) e);
-          String EquipeInsert =
-                  "INSERT INTO FaitPartieGroupe(gnom, nom) VALUES('"
-                          + obj.getNom()
-                          + "','"
-                          + e.getNom()
-                          + "')";
-
-          stmt.execute(EquipeInsert);
-        }
-
-
       }
-      this.compteur++;
     } catch (SQLException e) {
       e.printStackTrace();
     }
@@ -75,40 +64,34 @@ public class GroupeDao extends Dao<Groupe> {
   @Override
   public Groupe find(String id) {
     Groupe g = null;
-    /*try (ObjectInputStream in =
-        new ObjectInputStream(new BufferedInputStream(new FileInputStream(id)))) {
-      g = (Groupe) in.readObject();
-
-    } catch (ClassNotFoundException | IOException e) {
-      e.printStackTrace();
-    }*/
 
     this.connect();
 
-    String select = "SELECT * FROM Groupe G WHERE G.nom = '" + id + "'";
-    String selectItGroupe = "SELECT FPG.nom FROM FaitPartieGroupe FPG WHERE FPG.gnom = '" + id + "'";
-    String selectItPersonnel = "SELECT FPP.nom FROM FaitPartiePersonnel FPP WHERE FPP.gnom = '" + id + "'";
-    try {
-      this.stmt = connect.createStatement();
-      stmt.execute(select);
-      ResultSet res = stmt.getResultSet();
-      if ((stmt.getResultSet().next())) {
-        g =
-                new Groupe(res.getString("nom"));
+    try (PreparedStatement select =
+            this.connect.prepareStatement("SELECT * FROM Groupe G WHERE G.nom = ?");
+        PreparedStatement selectItGroupe =
+            this.connect.prepareStatement(
+                "SELECT FPG.nom FROM FaitPartieGroupe FPG WHERE FPG.gnom =  ?");
+        PreparedStatement selectItPersonnel =
+            this.connect.prepareStatement(
+                "SELECT FPP.nom FROM FaitPartiePersonnel FPP WHERE FPP.gnom = ?"); ) {
+      select.setString(1, id);
+      ResultSet res = select.executeQuery();
+      while (res.next()) {
+        g = new Groupe(res.getString("nom"));
         /*Ajout de la liste des personnels*/
-        stmt.execute(selectItPersonnel);
-        ResultSet resIt = stmt.getResultSet();
+        selectItPersonnel.setString(1, id);
+        ResultSet resIt = selectItPersonnel.executeQuery();
         while (resIt.next()) {
-          g.ajoutMembre((Personnel)this.ag.find(resIt.getString("nom")));
+          g.ajoutMembre((Personnel) this.ag.find(resIt.getString("nom")));
         }
         /*Ajout de la liste des Groupes*/
-        stmt.execute(selectItGroupe);
-        ResultSet resItG = stmt.getResultSet();
+        selectItGroupe.setString(1, id);
+        ResultSet resItG = selectItGroupe.executeQuery();
         while (resItG.next()) {
-          g.ajoutMembre((Groupe)this.find(resItG.getString("nom")));
+          g.ajoutMembre((Groupe) this.find(resItG.getString("nom")));
         }
       }
-
 
     } catch (SQLException e) {
       e.printStackTrace();
@@ -123,19 +106,17 @@ public class GroupeDao extends Dao<Groupe> {
   public void delete(String id) {
 
     this.connect();
-    String delete = "DELETE FROM GROUPE G WHERE G.nom = '" + id + "'";
-    try {
-      this.stmt = connect.createStatement();
-      this.stmt.execute(delete);
+
+    try (PreparedStatement delete =
+        this.connect.prepareStatement("DELETE FROM GROUPE G WHERE G.nom = ?"); ) {
+      delete.setString(1, id);
+      delete.executeUpdate();
     } catch (SQLException e) {
       e.printStackTrace();
     }
 
-
     this.disconnect();
-
   }
-
 
   @Override
   public void close() throws Exception {

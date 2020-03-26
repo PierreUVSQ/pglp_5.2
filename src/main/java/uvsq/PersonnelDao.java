@@ -1,6 +1,6 @@
 package uvsq;
 
-
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -9,8 +9,6 @@ import java.util.List;
 public class PersonnelDao extends Dao<Personnel> {
 
   protected PersonnelDao() throws SQLException {}
-
-  public static int compteur = 0;
 
   @Override
   public Personnel create(Personnel obj) {
@@ -22,33 +20,43 @@ public class PersonnelDao extends Dao<Personnel> {
     }*/
     this.connect();
 
-    try {
-      this.stmt = connect.createStatement();
+    try (PreparedStatement personnelInsert =
+            this.connect.prepareStatement(
+                "INSERT INTO Personnel(nom, prenom, fonction, naissance) values(?, ?, ?, ?)");
+        PreparedStatement telInsert =
+            this.connect.prepareStatement("INSERT INTO Telephone(nom, tel) VALUES(?, ?)"); ) {
+      /*this.stmt = connect.createStatement();
       String personnelInsert =
-              "INSERT INTO Personnel(nom, prenom, fonction, naissance) values("
-                      + "'"
-                      + obj.getNom()
-                      + "','"
-                      + obj.getPrenom()
-                      + "','"
-                      + obj.getFonction()
-                      + "','"
-                      + java.sql.Date.valueOf(obj.getLocalDate())
-                      + "')";
-      stmt.execute(personnelInsert);
+          "INSERT INTO Personnel(nom, prenom, fonction, naissance) values("
+              + "'"
+              + obj.getNom()
+              + "','"
+              + obj.getPrenom()
+              + "','"
+              + obj.getFonction()
+              + "','"
+              + java.sql.Date.valueOf(obj.getLocalDate())
+              + "')";
+      stmt.execute(personnelInsert);*/
+      personnelInsert.setString(1, obj.getNom());
+      personnelInsert.setString(2, obj.getPrenom());
+      personnelInsert.setString(3, obj.getFonction());
+      personnelInsert.setDate(4, java.sql.Date.valueOf(obj.getLocalDate()));
+      personnelInsert.executeUpdate();
       for (String e : obj.getTel()) {
 
-        String telInsert =
-                "INSERT INTO Telephone(nom, tel) VALUES('"
-                        + obj.getNom()
-                        + "',"
-                        + Integer.parseInt(e)
-                        + ")";
+        /*String telInsert =
+            "INSERT INTO Telephone(nom, tel) VALUES('"
+                + obj.getNom()
+                + "',"
+                + Integer.parseInt(e)
+                + ")";
 
-          stmt.execute(telInsert);
-
+        stmt.execute(telInsert);*/
+        telInsert.setString(1, obj.getNom());
+        telInsert.setInt(2, Integer.parseInt(e));
+        telInsert.executeUpdate();
       }
-      this.compteur++;
     } catch (SQLException e) {
       e.printStackTrace();
     }
@@ -60,28 +68,20 @@ public class PersonnelDao extends Dao<Personnel> {
   @Override
   public Personnel find(String id) {
     Personnel p = null;
-    /*try (ObjectInputStream in =
-        new ObjectInputStream(new BufferedInputStream(new FileInputStream(id)))) {
-      p = (Personnel) in.readObject();
-
-    } catch (ClassNotFoundException | IOException e) {
-      e.printStackTrace();
-    }*/
     this.connect();
-
-    String select = "SELECT * FROM Personnel P WHERE P.nom = '" + id + "'";
-    String selectTel = "SELECT T.tel FROM Telephone T WHERE T.nom = '" + id + "'";
-    try {
-      this.stmt = connect.createStatement();
-      stmt.execute(selectTel);
-      ResultSet resTel = stmt.getResultSet();
+    try (PreparedStatement select =
+            this.connect.prepareStatement("SELECT * FROM Personnel P WHERE P.nom = ?");
+        PreparedStatement selectTel =
+            this.connect.prepareStatement("SELECT T.tel FROM Telephone T WHERE T.nom = ?"); ) {
+      selectTel.setString(1, id);
+      ResultSet resTel = selectTel.executeQuery();
       List<String> tel = new ArrayList<>();
       while (resTel.next()) {
         tel.add(String.valueOf(resTel.getInt("tel")));
       }
-      stmt.execute(select);
-      ResultSet res = stmt.getResultSet();
-      if ((stmt.getResultSet().next())) {
+      select.setString(1, id);
+      ResultSet res = select.executeQuery();
+      if ((res.next())) {
         p =
             new Personnel.Builder(
                     res.getString("nom"), res.getString("prenom"), res.getString("fonction"))
@@ -100,11 +100,11 @@ public class PersonnelDao extends Dao<Personnel> {
   @Override
   public void delete(String id) {
 
-    String delete = "DELETE FROM Personnel P WHERE P.nom = '" + id + "'";
     this.connect();
-    try {
-      this.stmt = connect.createStatement();
-      this.stmt.execute(delete);
+    try (PreparedStatement delete =
+        this.connect.prepareStatement("DELETE FROM Personnel P WHERE P.nom = ?"); ) {
+      delete.setString(1, id);
+      delete.executeUpdate();
     } catch (SQLException e) {
       e.printStackTrace();
     }

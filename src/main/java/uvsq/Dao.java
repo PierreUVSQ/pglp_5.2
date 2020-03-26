@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public abstract class Dao<T> implements AutoCloseable{
+public abstract class Dao<T> implements AutoCloseable {
 
   public Connection connect = null;
 
@@ -17,7 +17,7 @@ public abstract class Dao<T> implements AutoCloseable{
 
   public abstract void delete(String id);
 
-  public void connect(){
+  public void connect() {
 
     try {
       Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
@@ -30,10 +30,9 @@ public abstract class Dao<T> implements AutoCloseable{
         ex.printStackTrace();
       }
     }
-
   }
 
-  public void disconnect(){
+  public void disconnect() {
 
     try {
       connect.close();
@@ -41,5 +40,4 @@ public abstract class Dao<T> implements AutoCloseable{
       e.printStackTrace();
     }
   }
-
 }

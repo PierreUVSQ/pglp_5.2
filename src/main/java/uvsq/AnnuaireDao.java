@@ -1,6 +1,7 @@
 package uvsq;
 
 import java.io.*;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -25,31 +26,31 @@ public class AnnuaireDao extends Dao<Annuaire> {
 
     this.connect();
 
-    try {
-      this.stmt = connect.createStatement();
+    try (PreparedStatement EquipeInsert1 =
+            connect.prepareStatement("INSERT INTO AnnuairePersonnel(nom) VALUES(?) ");
+        PreparedStatement EquipeInsert2 =
+            connect.prepareStatement("INSERT INTO AnnuaireGroupe(gnom) VALUES(?)"); ) {
+
       for (Equipe e : obj) {
 
-        if( e instanceof  Personnel){
+        if (e instanceof Personnel) {
           this.ag.create((Personnel) e);
-          String EquipeInsert =
-                  "INSERT INTO AnnuairePersonnel(nom) VALUES('"
-                          + e.getNom()
-                          + "')";
+          EquipeInsert1.setString(1, e.getNom());
+          EquipeInsert1.executeUpdate();
+          // final String EquipeInsert = "INSERT INTO AnnuairePersonnel(nom) VALUES('" + e.getNom()
+          // + "')";
 
-          stmt.execute(EquipeInsert);
+          // stmt.execute(EquipeInsert);
 
-        }
-        else if (e instanceof Groupe){
+        } else if (e instanceof Groupe) {
           DaoFactory.getGroupeDao().create((Groupe) e);
-          String EquipeInsert =
-                  "INSERT INTO AnnuaireGroupe(gnom) VALUES('"
-                          + e.getNom()
-                          + "')";
+          EquipeInsert2.setString(1, e.getNom());
+          EquipeInsert2.executeUpdate();
+          // final String EquipeInsert = "INSERT INTO AnnuaireGroupe(gnom) VALUES('" + e.getNom() +
+          // "')";
 
-          stmt.execute(EquipeInsert);
+          // stmt.execute(EquipeInsert);
         }
-
-
       }
     } catch (SQLException e) {
       e.printStackTrace();
@@ -71,25 +72,23 @@ public class AnnuaireDao extends Dao<Annuaire> {
     }*/
     this.connect();
 
-    //String select = "SELECT * FROM Groupe G WHERE G.nom = '" + id + "'";
+    // String select = "SELECT * FROM Groupe G WHERE G.nom = '" + id + "'";
     String selectItGroupe = "SELECT * FROM AnnuaireGroupe AG ";
     String selectItPersonnel = "SELECT * FROM AnnuairePersonnel AP";
     try {
       this.stmt = connect.createStatement();
-        /*Ajout de la liste des personnels*/
-        stmt.execute(selectItPersonnel);
-        ResultSet resIt = stmt.getResultSet();
-        while (resIt.next()) {
-          p.addEquipe((Personnel)this.ag.find(resIt.getString("nom")));
-        }
-        /*Ajout de la liste des Groupes*/
-        stmt.execute(selectItGroupe);
-        ResultSet resItG = stmt.getResultSet();
-        while (resItG.next()) {
-          p.addEquipe((Groupe)this.aGroupe.find(resItG.getString("gnom")));
-        }
-
-
+      /*Ajout de la liste des personnels*/
+      stmt.execute(selectItPersonnel);
+      ResultSet resIt = stmt.getResultSet();
+      while (resIt.next()) {
+        p.addEquipe((Personnel) this.ag.find(resIt.getString("nom")));
+      }
+      /*Ajout de la liste des Groupes*/
+      stmt.execute(selectItGroupe);
+      ResultSet resItG = stmt.getResultSet();
+      while (resItG.next()) {
+        p.addEquipe((Groupe) this.aGroupe.find(resItG.getString("gnom")));
+      }
 
     } catch (SQLException e) {
       e.printStackTrace();
@@ -112,7 +111,6 @@ public class AnnuaireDao extends Dao<Annuaire> {
     } catch (SQLException e) {
       e.printStackTrace();
     }
-
   }
 
   @Override

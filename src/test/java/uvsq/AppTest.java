@@ -3,6 +3,8 @@ package uvsq;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.derby.iapi.services.io.FileUtil;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -27,6 +29,12 @@ public class AppTest {
 
   @Before
   public void init() {
+    File index = new File("test");
+    try {
+      FileUtils.deleteDirectory(index);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
 
     Connection connect = null;
 
@@ -51,9 +59,9 @@ public class AppTest {
       stmt.execute(createTable);
       createTable = "CREATE TABLE Groupe( nom varchar(50) PRIMARY KEY NOT NULL)";
       stmt.execute(createTable);
-      createTable = "CREATE TABLE FaitPartieGroupe(gnom varchar(50), nom varchar(50), PRIMARY KEY(gnom,nom), FOREIGN KEY (gnom) REFERENCES Groupe(nom), FOREIGN KEY (nom) REFERENCES Personnel(nom))";
+      createTable = "CREATE TABLE FaitPartiePersonnel(gnom varchar(50), nom varchar(50), PRIMARY KEY(gnom,nom), FOREIGN KEY (gnom) REFERENCES Groupe(nom), FOREIGN KEY (nom) REFERENCES Personnel(nom))";
       stmt.execute(createTable);
-      createTable = "CREATE TABLE FaitPartiePersonnel(gnom varchar(50), nom varchar(50), PRIMARY KEY(gnom,nom), FOREIGN KEY (gnom) REFERENCES Groupe(nom), FOREIGN KEY (nom) REFERENCES Groupe(nom))";
+      createTable = "CREATE TABLE FaitPartieGroupe(gnom varchar(50), nom varchar(50), PRIMARY KEY(gnom,nom), FOREIGN KEY (gnom) REFERENCES Groupe(nom), FOREIGN KEY (nom) REFERENCES Groupe(nom))";
       stmt.execute(createTable);
       connect.close();
     } catch (ClassNotFoundException | SQLException e) {
@@ -186,6 +194,11 @@ public class AppTest {
     Personnel p1 =
         new Personnel.Builder("Smith", "John", "ComputerScienist").updatePhoneList(tmp).build();
     Personnel p2 = new Personnel.Builder("pg", "lp", "class").updatePhoneList(tmp).build();
+    g.ajoutMembre(p1);
+    g.ajoutMembre(p2);
+    Groupe g2 = new Groupe("UN GROUPE");
+    g2.ajoutMembre(new Personnel.Builder("pg3", "lp", "class").updatePhoneList(tmp).build());
+    g.ajoutMembre(g2);
     Dao ag = null;
     try {
       ag = DaoFactory.getGroupeDao();
@@ -194,6 +207,10 @@ public class AppTest {
     }
     ag.create(g);
     Groupe test = (Groupe) ag.find("toto");
+    for(Equipe e : test){
+      e.printNom();
+
+    }
     assertEquals("toto", test.getNom());
   }
 

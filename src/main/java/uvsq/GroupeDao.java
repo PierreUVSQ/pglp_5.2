@@ -38,19 +38,28 @@ public class GroupeDao extends Dao<Groupe> {
 
         if( e instanceof  Personnel){
           this.ag.create((Personnel) e);
+          String EquipeInsert =
+                  "INSERT INTO FaitPartiePersonnel(gnom, nom) VALUES('"
+                          + obj.getNom()
+                          + "','"
+                          + e.getNom()
+                          + "')";
+
+          stmt.execute(EquipeInsert);
 
         }
-        else{
-          this.create((Groupe) e);
-        }
-        String EquipeInsert =
-                "INSERT INTO FaitPartie(gnom, nom) VALUES("
-                        + obj.getNom()
-                        + ","
-                        + e.getNom()
-                        + ")";
+        else if (e instanceof Groupe){
+         DaoFactory.getGroupeDao().create((Groupe) e);
+          String EquipeInsert =
+                  "INSERT INTO FaitPartieGroupe(gnom, nom) VALUES('"
+                          + obj.getNom()
+                          + "','"
+                          + e.getNom()
+                          + "')";
 
-       stmt.execute(EquipeInsert);
+          stmt.execute(EquipeInsert);
+        }
+
 
       }
       this.compteur++;
@@ -90,13 +99,13 @@ public class GroupeDao extends Dao<Groupe> {
         stmt.execute(selectItPersonnel);
         ResultSet resIt = stmt.getResultSet();
         while (resIt.next()) {
-          g.ajoutMembre((Personnel)this.ag.find(res.getString("nom")));
+          g.ajoutMembre((Personnel)this.ag.find(resIt.getString("nom")));
         }
         /*Ajout de la liste des Groupes*/
         stmt.execute(selectItGroupe);
         ResultSet resItG = stmt.getResultSet();
         while (resItG.next()) {
-          g.ajoutMembre((Groupe)this.find(res.getString("nom")));
+          g.ajoutMembre((Groupe)this.find(resItG.getString("nom")));
         }
       }
 

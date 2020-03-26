@@ -8,16 +8,11 @@ import java.util.List;
 
 public class PersonnelDao extends Dao<Personnel> {
 
-  protected PersonnelDao() throws SQLException {}
+  protected PersonnelDao() {}
 
   @Override
   public Personnel create(Personnel obj) {
-    /*   try (ObjectOutputStream out =
-        new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream("personnel")))) {
-      out.writeObject(obj);
-    } catch (IOException ioe) {
 
-    }*/
     this.connect();
 
     try (PreparedStatement personnelInsert =
@@ -25,19 +20,6 @@ public class PersonnelDao extends Dao<Personnel> {
                 "INSERT INTO Personnel(nom, prenom, fonction, naissance) values(?, ?, ?, ?)");
         PreparedStatement telInsert =
             this.connect.prepareStatement("INSERT INTO Telephone(nom, tel) VALUES(?, ?)"); ) {
-      /*this.stmt = connect.createStatement();
-      String personnelInsert =
-          "INSERT INTO Personnel(nom, prenom, fonction, naissance) values("
-              + "'"
-              + obj.getNom()
-              + "','"
-              + obj.getPrenom()
-              + "','"
-              + obj.getFonction()
-              + "','"
-              + java.sql.Date.valueOf(obj.getLocalDate())
-              + "')";
-      stmt.execute(personnelInsert);*/
       personnelInsert.setString(1, obj.getNom());
       personnelInsert.setString(2, obj.getPrenom());
       personnelInsert.setString(3, obj.getFonction());
@@ -45,14 +27,6 @@ public class PersonnelDao extends Dao<Personnel> {
       personnelInsert.executeUpdate();
       for (String e : obj.getTel()) {
 
-        /*String telInsert =
-            "INSERT INTO Telephone(nom, tel) VALUES('"
-                + obj.getNom()
-                + "',"
-                + Integer.parseInt(e)
-                + ")";
-
-        stmt.execute(telInsert);*/
         telInsert.setString(1, obj.getNom());
         telInsert.setInt(2, Integer.parseInt(e));
         telInsert.executeUpdate();

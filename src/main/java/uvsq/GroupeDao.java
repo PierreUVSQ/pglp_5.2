@@ -14,18 +14,17 @@ public class GroupeDao extends Dao<Groupe> {
 
   private Dao ag;
 
-  protected GroupeDao() throws SQLException {
-    ag = DaoFactory.getPersonnelDao();
+  protected GroupeDao() {
+    try {
+      ag = DaoFactory.getPersonnelDao();
+    } catch (SQLException e) {
+      System.exit(0);
+    }
   }
 
   @Override
   public Groupe create(Groupe obj) {
-    /*try (ObjectOutputStream out =
-        new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream("groupe")))) {
-      out.writeObject(obj);
-    } catch (IOException ioe) {
 
-    }*/
     this.connect();
 
     try (PreparedStatement personnelInsert =

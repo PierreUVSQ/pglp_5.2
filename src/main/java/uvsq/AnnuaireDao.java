@@ -5,14 +5,22 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import static java.lang.System.exit;
+
 public class AnnuaireDao extends Dao<Annuaire> {
 
   private Dao ag;
   private Dao aGroupe;
 
-  protected AnnuaireDao() throws SQLException {
-    ag = DaoFactory.getPersonnelDao();
-    aGroupe = DaoFactory.getGroupeDao();
+  protected AnnuaireDao() {
+    try {
+      ag = DaoFactory.getPersonnelDao();
+      aGroupe = DaoFactory.getGroupeDao();
+    } catch (SQLException e) {
+      e.printStackTrace();
+      exit(0);
+    }
+
   }
 
   @Override

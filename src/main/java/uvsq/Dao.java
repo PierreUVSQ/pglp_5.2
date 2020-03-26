@@ -15,7 +15,7 @@ public abstract class Dao<T> implements AutoCloseable{
 
   public abstract T find(String id);
 
-  public abstract void delete(String file);
+  public abstract void delete(String id);
 
   public void connect(){
 

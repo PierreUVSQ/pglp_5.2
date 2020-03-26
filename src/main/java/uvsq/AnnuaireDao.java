@@ -101,10 +101,10 @@ public class AnnuaireDao extends Dao<Annuaire> {
   }
 
   @Override
-  public void delete(String file) {
+  public void delete(String id) {
 
     try {
-      File f = new File(file);
+      File f = new File(id);
 
       if (f.delete()) {
         System.out.println("Deletion complete");

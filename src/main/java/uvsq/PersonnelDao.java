@@ -98,7 +98,17 @@ public class PersonnelDao extends Dao<Personnel> {
   }
 
   @Override
-  public void delete(String file) {}
+  public void delete(String id) {
+
+    String delete = "DELETE FROM Personnel P WHERE P.nom = '" + id + "'";
+    this.connect();
+    try {
+      this.stmt = connect.createStatement();
+      this.stmt.execute(delete);
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+  }
 
   @Override
   public void close() throws Exception {

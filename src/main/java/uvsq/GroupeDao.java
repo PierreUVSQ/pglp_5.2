@@ -74,7 +74,7 @@ public class GroupeDao extends Dao<Groupe> {
 
   @Override
   public Groupe find(String id) {
-    Groupe g = new Groupe("Vide");
+    Groupe g = null;
     /*try (ObjectInputStream in =
         new ObjectInputStream(new BufferedInputStream(new FileInputStream(id)))) {
       g = (Groupe) in.readObject();
@@ -120,20 +120,22 @@ public class GroupeDao extends Dao<Groupe> {
   }
 
   @Override
-  public void delete(String file) {
+  public void delete(String id) {
 
+    this.connect();
+    String delete = "DELETE FROM GROUPE G WHERE G.nom = '" + id + "'";
     try {
-      File f = new File(file);
-
-      if (f.delete()) {
-        System.out.println("Deletion complete");
-      } else {
-        System.out.println("Failure");
-      }
-    } catch (Exception e) {
+      this.stmt = connect.createStatement();
+      this.stmt.execute(delete);
+    } catch (SQLException e) {
       e.printStackTrace();
     }
+
+
+    this.disconnect();
+
   }
+
 
   @Override
   public void close() throws Exception {

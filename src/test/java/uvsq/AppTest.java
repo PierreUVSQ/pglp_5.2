@@ -1,10 +1,8 @@
 package uvsq;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -16,6 +14,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import static org.junit.Assert.*;
 
 /** Unit test for simple App. */
 public class AppTest {
@@ -49,17 +49,17 @@ public class AppTest {
 
       String createTable = "CREATE TABLE Personnel(nom varchar(50) PRIMARY KEY NOT NULL, prenom  varchar(50), fonction varchar(50),naissance DATE)";
       stmt.execute(createTable);
-      createTable = "CREATE TABLE Telephone (nom varchar(50), tel int, PRIMARY KEY(nom, tel), FOREIGN KEY(nom) REFERENCES Personnel(nom))";
+      createTable = "CREATE TABLE Telephone (nom varchar(50), tel int, PRIMARY KEY(nom, tel), FOREIGN KEY(nom) REFERENCES Personnel(nom) ON DELETE CASCADE )";
       stmt.execute(createTable);
       createTable = "CREATE TABLE Groupe( nom varchar(50) PRIMARY KEY NOT NULL)";
       stmt.execute(createTable);
-      createTable = "CREATE TABLE FaitPartiePersonnel(gnom varchar(50), nom varchar(50), PRIMARY KEY(gnom,nom), FOREIGN KEY (gnom) REFERENCES Groupe(nom), FOREIGN KEY (nom) REFERENCES Personnel(nom))";
+      createTable = "CREATE TABLE FaitPartiePersonnel(gnom varchar(50), nom varchar(50), PRIMARY KEY(gnom,nom), FOREIGN KEY (gnom) REFERENCES Groupe(nom) ON DELETE CASCADE, FOREIGN KEY (nom) REFERENCES Personnel(nom) ON DELETE CASCADE)";
       stmt.execute(createTable);
-      createTable = "CREATE TABLE FaitPartieGroupe(gnom varchar(50), nom varchar(50), PRIMARY KEY(gnom,nom), FOREIGN KEY (gnom) REFERENCES Groupe(nom), FOREIGN KEY (nom) REFERENCES Groupe(nom))";
+      createTable = "CREATE TABLE FaitPartieGroupe(gnom varchar(50), nom varchar(50), PRIMARY KEY(gnom,nom), FOREIGN KEY (gnom) REFERENCES Groupe(nom) ON DELETE CASCADE, FOREIGN KEY (nom) REFERENCES Groupe(nom) ON DELETE CASCADE)";
       stmt.execute(createTable);
-      createTable = "CREATE TABLE AnnuaireGroupe(gnom varchar(50) PRIMARY KEY, FOREIGN KEY (gnom) REFERENCES Groupe(nom))";
+      createTable = "CREATE TABLE AnnuaireGroupe(gnom varchar(50) PRIMARY KEY, FOREIGN KEY (gnom) REFERENCES Groupe(nom) ON DELETE CASCADE)";
       stmt.execute(createTable);
-      createTable = "CREATE TABLE AnnuairePersonnel(nom varchar(50), PRIMARY KEY(nom), FOREIGN KEY (nom) REFERENCES Personnel(nom))";
+      createTable = "CREATE TABLE AnnuairePersonnel(nom varchar(50), PRIMARY KEY(nom), FOREIGN KEY (nom) REFERENCES Personnel(nom) ON DELETE CASCADE)";
       stmt.execute(createTable);
       connect.close();
     } catch (ClassNotFoundException | SQLException e) {
@@ -242,23 +242,59 @@ public class AppTest {
     }
   }
 
+  @Test
+  public void testDeletePersonnel(){
+    List<String> tmp = new ArrayList<>();
+    tmp.add("0000000");
+    tmp.add("12345678");
+    Personnel p1 =
+            new Personnel.Builder("SmithDelete", "John", "ComputerScienist").updatePhoneList(tmp).build();
+    // Dao ap = null;
+    try (Dao ap = new PersonnelDao()) {
 
-  @After
-  public void after(){
-  /*  try {
-      DriverManager.getConnection("jdbc:derby:test;shutdown=true");
+      ap.create(p1);
+      ap.delete("SmithDelete");
+      assertNull( (Personnel)ap.find("SmithDelete"));
     } catch (SQLException e) {
       e.printStackTrace();
+    } catch (Exception e) {
+      e.printStackTrace();
     }
-*/
+  }
 
+  @Test
+  public void testDeleteGroupe(){
+    List<String> tmp = new ArrayList<>();
+    tmp.add("0000000");
+    tmp.add("12345678");
+    Personnel p1 =
+            new Personnel.Builder("SmithDeleteG", "John", "ComputerScienist").updatePhoneList(tmp).build();
+    Groupe g = new Groupe("GroupeDelete1");
+    g.ajoutMembre(p1);
+    g.ajoutMembre(new Groupe("GroupeDelete2"));
+    try (Dao ag = new GroupeDao()) {
+
+      ag.create(g);
+      ag.delete("GroupeDelete1");
+      assertNull( (Groupe)ag.find("GroupeDelete1"));;
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+
+
+  @AfterClass
+  public static void after(){
     try {
       FileUtils.deleteDirectory(index);
     } catch (IOException e) {
       System.out.println("Creation du test");
     }
 
-  }
 
+  }
 }
 

@@ -4,8 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.derby.iapi.services.io.FileUtil;
-import org.junit.Before;
+import org.junit.After;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.*;
@@ -20,29 +20,21 @@ import java.util.List;
 /** Unit test for simple App. */
 public class AppTest {
   /** Rigorous Test :-) */
-  public Connection connect = null;
-  public Statement stmt = null;
-  @Test
-  public void shouldAnswerWithTrue() {
-    assertTrue(true);
-  }
+  public static Connection connect = null;
+  public static Statement stmt = null;
+  public static boolean first = true;
+  static File index = new File("test");
 
-  @Before
-  public void init() {
-    File index = new File("test");
-    try {
-      FileUtils.deleteDirectory(index);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+  @BeforeClass
+  public static void init() {
 
-    Connection connect = null;
 
     try {
-      Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
-      connect = DriverManager.getConnection("jdbc:derby:test;create=true");
-      stmt = connect.createStatement();
-      /*String drop = "DROP TABLE Telephone";
+        Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
+        connect = DriverManager.getConnection("jdbc:derby:test;create=true");
+        stmt = connect.createStatement();
+      /*
+      String drop = "DROP TABLE Telephone";
       stmt.execute(drop);
       drop = "DROP TABLE Personnel";
       stmt.execute(drop);
@@ -50,7 +42,9 @@ public class AppTest {
       stmt.execute(drop);
       drop = "DROP TABLE FaitPartieGroupe";
       stmt.execute(drop);
-      drop = "DROP TABLE Groupe";
+      drop = "DROP TABLE AnnuaireGroupe";
+      stmt.execute(drop);
+      drop = "DROP TABLE AnnuairePersonnel";
       stmt.execute(drop);*/
 
       String createTable = "CREATE TABLE Personnel(nom varchar(50) PRIMARY KEY NOT NULL, prenom  varchar(50), fonction varchar(50),naissance DATE)";
@@ -62,6 +56,10 @@ public class AppTest {
       createTable = "CREATE TABLE FaitPartiePersonnel(gnom varchar(50), nom varchar(50), PRIMARY KEY(gnom,nom), FOREIGN KEY (gnom) REFERENCES Groupe(nom), FOREIGN KEY (nom) REFERENCES Personnel(nom))";
       stmt.execute(createTable);
       createTable = "CREATE TABLE FaitPartieGroupe(gnom varchar(50), nom varchar(50), PRIMARY KEY(gnom,nom), FOREIGN KEY (gnom) REFERENCES Groupe(nom), FOREIGN KEY (nom) REFERENCES Groupe(nom))";
+      stmt.execute(createTable);
+      createTable = "CREATE TABLE AnnuaireGroupe(gnom varchar(50) PRIMARY KEY, FOREIGN KEY (gnom) REFERENCES Groupe(nom))";
+      stmt.execute(createTable);
+      createTable = "CREATE TABLE AnnuairePersonnel(nom varchar(50), PRIMARY KEY(nom), FOREIGN KEY (nom) REFERENCES Personnel(nom))";
       stmt.execute(createTable);
       connect.close();
     } catch (ClassNotFoundException | SQLException e) {
@@ -96,7 +94,7 @@ public class AppTest {
 
     gg.ajoutMembre(p1);
     gg.ajoutMembre(p2);
-    g2.ajoutMembre(p1);
+    g2.ajoutMembre( new Personnel.Builder("jsp1", "lp", "class").updatePhoneList(tmp).build());
     a.addEquipe(p1);
     a.addEquipe(new Groupe("Groupe1"));
     a.addEquipe(new Groupe("Groupe2"));
@@ -136,7 +134,6 @@ public class AppTest {
 
     }
 
-    System.out.println("Start");
   }
 
   @Test
@@ -161,16 +158,19 @@ public class AppTest {
 
     gg.ajoutMembre(p1);
     gg.ajoutMembre(p2);
-    g2.ajoutMembre(p1);
-    a.addEquipe(p1);
-    a.addEquipe(new Groupe("Groupe1"));
-    a.addEquipe(new Groupe("Groupe2"));
+    g2.ajoutMembre(new Personnel.Builder("pgAnnuaire", "lp", "class").updatePhoneList(tmp).build());
+    a.addEquipe(new Personnel.Builder("pgAnnuaire2", "lp", "class").updatePhoneList(tmp).build());
+    a.addEquipe(new Groupe("Groupe1Annuaire"));
+    a.addEquipe(new Groupe("Groupe2Annuaire"));
     a.addEquipe(gg);
     a.addEquipe(g2);
     ad.create(a);
 
     Annuaire test = (Annuaire) ad.find("annuaire");
-
+    for (Equipe e : test){
+      e.printNom();
+    }
+    /*
     Iterator jsp1 = test.iterator();
     Iterator jsp2 = a.iterator();
     Equipe e1;
@@ -180,7 +180,7 @@ public class AppTest {
       e1 = (Equipe) jsp1.next();
       e2 = (Equipe) jsp2.next();
       assertEquals(e1.getNom(), e2.getNom());
-    }
+    }*/
   }
 
   @Test
@@ -192,8 +192,8 @@ public class AppTest {
     tmp.add("0000000");
     tmp.add("12345678");
     Personnel p1 =
-        new Personnel.Builder("Smith", "John", "ComputerScienist").updatePhoneList(tmp).build();
-    Personnel p2 = new Personnel.Builder("pg", "lp", "class").updatePhoneList(tmp).build();
+        new Personnel.Builder("Smith2", "John", "ComputerScienist").updatePhoneList(tmp).build();
+    Personnel p2 = new Personnel.Builder("pg2", "lp", "class").updatePhoneList(tmp).build();
     g.ajoutMembre(p1);
     g.ajoutMembre(p2);
     Groupe g2 = new Groupe("UN GROUPE");
@@ -221,13 +221,13 @@ public class AppTest {
     tmp.add("0000000");
     tmp.add("12345678");
     Personnel p1 =
-        new Personnel.Builder("Smith", "John", "ComputerScienist").updatePhoneList(tmp).build();
+        new Personnel.Builder("Smith3", "John", "ComputerScienist").updatePhoneList(tmp).build();
     // Dao ap = null;
     try (Dao ap = new PersonnelDao()) {
 
       ap.create(p1);
-     Personnel test = (Personnel) ap.find("Smith");
-      assertEquals("Smith", test.getNom());
+     Personnel test = (Personnel) ap.find("Smith3");
+      assertEquals("Smith3", test.getNom());
       for (String e : test.getTel()) {
         System.out.println(e);
       }
@@ -241,4 +241,24 @@ public class AppTest {
       }
     }
   }
+
+
+  @After
+  public void after(){
+  /*  try {
+      DriverManager.getConnection("jdbc:derby:test;shutdown=true");
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+*/
+
+    try {
+      FileUtils.deleteDirectory(index);
+    } catch (IOException e) {
+      System.out.println("Creation du test");
+    }
+
+  }
+
 }
+

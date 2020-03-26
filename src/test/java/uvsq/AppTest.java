@@ -34,16 +34,26 @@ public class AppTest {
       Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
       connect = DriverManager.getConnection("jdbc:derby:test;create=true");
       stmt = connect.createStatement();
-      String drop = "DROP TABLE Telephone";
+      /*String drop = "DROP TABLE Telephone";
       stmt.execute(drop);
       drop = "DROP TABLE Personnel";
       stmt.execute(drop);
+      drop = "DROP TABLE FaitPartiePersonnel";
+      stmt.execute(drop);
+      drop = "DROP TABLE FaitPartieGroupe";
+      stmt.execute(drop);
+      drop = "DROP TABLE Groupe";
+      stmt.execute(drop);*/
 
       String createTable = "CREATE TABLE Personnel(nom varchar(50) PRIMARY KEY NOT NULL, prenom  varchar(50), fonction varchar(50),naissance DATE)";
       stmt.execute(createTable);
       createTable = "CREATE TABLE Telephone (nom varchar(50), tel int, PRIMARY KEY(nom, tel), FOREIGN KEY(nom) REFERENCES Personnel(nom))";
       stmt.execute(createTable);
       createTable = "CREATE TABLE Groupe( nom varchar(50) PRIMARY KEY NOT NULL)";
+      stmt.execute(createTable);
+      createTable = "CREATE TABLE FaitPartieGroupe(gnom varchar(50), nom varchar(50), PRIMARY KEY(gnom,nom), FOREIGN KEY (gnom) REFERENCES Groupe(nom), FOREIGN KEY (nom) REFERENCES Personnel(nom))";
+      stmt.execute(createTable);
+      createTable = "CREATE TABLE FaitPartiePersonnel(gnom varchar(50), nom varchar(50), PRIMARY KEY(gnom,nom), FOREIGN KEY (gnom) REFERENCES Groupe(nom), FOREIGN KEY (nom) REFERENCES Groupe(nom))";
       stmt.execute(createTable);
       connect.close();
     } catch (ClassNotFoundException | SQLException e) {
@@ -183,7 +193,7 @@ public class AppTest {
       e.printStackTrace();
     }
     ag.create(g);
-    Groupe test = (Groupe) ag.find("groupe");
+    Groupe test = (Groupe) ag.find("toto");
     assertEquals("toto", test.getNom());
   }
 

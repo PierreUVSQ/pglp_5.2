@@ -7,11 +7,9 @@ import java.util.List;
 
 public class Groupe extends Equipe implements Iterable<Equipe>, Serializable {
 
-  private final String nom;
   private EquipeIterator<Equipe> head;
 
   public Groupe(String nom) {
-
     this.nom = nom;
     this.head = new EquipeIterator<Equipe>();
   }

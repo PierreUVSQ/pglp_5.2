@@ -1,12 +1,20 @@
 package uvsq;
 
+import org.apache.bcel.generic.INSTANCEOF;
+
 import java.io.*;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GroupeDao extends Dao<Groupe> {
 
+  private Dao ag;
+
   protected GroupeDao() throws SQLException {
+    ag = DaoFactory.getPersonnelDao();
   }
   public static int compteur = 0;
   @Override
@@ -22,22 +30,27 @@ public class GroupeDao extends Dao<Groupe> {
     try {
       this.stmt = connect.createStatement();
       String personnelInsert =
-              "INSERT INTO Groupe(gid, nom) values("
-                      + this.compteur
-                      + ",'"
+              "INSERT INTO Groupe(nom) values('"
                       + obj.getNom()
                       + "')";
       stmt.execute(personnelInsert);
       for (Equipe e : obj) {
 
+        if( e instanceof  Personnel){
+          this.ag.create((Personnel) e);
+
+        }
+        else{
+          this.create((Groupe) e);
+        }
         String EquipeInsert =
-                "INSERT INTO Telephone(id, tel) VALUES("
-                        + this.compteur
+                "INSERT INTO FaitPartie(gnom, nom) VALUES("
+                        + obj.getNom()
                         + ","
-  //                      + Integer.parseInt(e)
+                        + e.getNom()
                         + ")";
 
-//        stmt.execute(telInsert);
+       stmt.execute(EquipeInsert);
 
       }
       this.compteur++;
@@ -53,13 +66,46 @@ public class GroupeDao extends Dao<Groupe> {
   @Override
   public Groupe find(String id) {
     Groupe g = new Groupe("Vide");
-    try (ObjectInputStream in =
+    /*try (ObjectInputStream in =
         new ObjectInputStream(new BufferedInputStream(new FileInputStream(id)))) {
       g = (Groupe) in.readObject();
 
     } catch (ClassNotFoundException | IOException e) {
       e.printStackTrace();
+    }*/
+
+    this.connect();
+
+    String select = "SELECT * FROM Groupe G WHERE G.nom = '" + id + "'";
+    String selectItGroupe = "SELECT FPG.nom FROM FaitPartieGroupe FPG WHERE FPG.gnom = '" + id + "'";
+    String selectItPersonnel = "SELECT FPP.nom FROM FaitPartiePersonnel FPP WHERE FPP.gnom = '" + id + "'";
+    try {
+      this.stmt = connect.createStatement();
+      stmt.execute(select);
+      ResultSet res = stmt.getResultSet();
+      if ((stmt.getResultSet().next())) {
+        g =
+                new Groupe(res.getString("nom"));
+        /*Ajout de la liste des personnels*/
+        stmt.execute(selectItPersonnel);
+        ResultSet resIt = stmt.getResultSet();
+        while (resIt.next()) {
+          g.ajoutMembre((Personnel)this.ag.find(res.getString("nom")));
+        }
+        /*Ajout de la liste des Groupes*/
+        stmt.execute(selectItGroupe);
+        ResultSet resItG = stmt.getResultSet();
+        while (resItG.next()) {
+          g.ajoutMembre((Groupe)this.find(res.getString("nom")));
+        }
+      }
+
+
+    } catch (SQLException e) {
+      e.printStackTrace();
     }
+
+    this.disconnect();
 
     return g;
   }

@@ -43,15 +43,12 @@ public class Annuaire implements Iterable<Equipe>, Serializable {
     this.head.add(e);
   }
 
-  public static AbstractDaoFactory createChoisiDaoFactory(String choix){
+  public static AbstractDaoFactory createChoisiDaoFactory(String choix) {
 
-    if(choix == "SGBD"){
+    if (choix == "SGBD") {
       return new DaoFactory();
-    }
-    else{
+    } else {
       return new SerialDaoFactory();
     }
-
   }
-
 }

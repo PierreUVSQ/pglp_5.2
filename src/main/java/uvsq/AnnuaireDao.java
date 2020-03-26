@@ -1,4 +1,5 @@
 package uvsq;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,9 +11,8 @@ public class AnnuaireDao extends Dao<Annuaire> {
 
   protected AnnuaireDao() {
 
-      ag = Annuaire.createChoisiDaoFactory("SGBD").createPersonnelDao();
-      aGroupe = Annuaire.createChoisiDaoFactory("SGBD").createGroupeDao();
-
+    ag = Annuaire.createChoisiDaoFactory("SGBD").createPersonnelDao();
+    aGroupe = Annuaire.createChoisiDaoFactory("SGBD").createGroupeDao();
   }
 
   @Override
@@ -32,7 +32,7 @@ public class AnnuaireDao extends Dao<Annuaire> {
           EquipeInsert1.executeUpdate();
 
         } else if (e instanceof Groupe) {
-          Annuaire.createChoisiDaoFactory("SGBD").createGroupeDao().create((Groupe)e);
+          Annuaire.createChoisiDaoFactory("SGBD").createGroupeDao().create((Groupe) e);
           EquipeInsert2.setString(1, e.getNom());
           EquipeInsert2.executeUpdate();
         }

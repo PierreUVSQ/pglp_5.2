@@ -102,18 +102,17 @@ public class AnnuaireDao extends Dao<Annuaire> {
 
   @Override
   public void delete(String id) {
-
+    this.connect();
     try {
-      File f = new File(id);
-
-      if (f.delete()) {
-        System.out.println("Deletion complete");
-      } else {
-        System.out.println("Failure");
-      }
-    } catch (Exception e) {
+      this.stmt = connect.createStatement();
+      String delete1 = "DELETE FROM AnnuaireGroupe";
+      String delete2 = "DELETE FROM AnnuairePersonnel";
+      this.stmt.execute(delete1);
+      this.stmt.execute(delete2);
+    } catch (SQLException e) {
       e.printStackTrace();
     }
+
   }
 
   @Override

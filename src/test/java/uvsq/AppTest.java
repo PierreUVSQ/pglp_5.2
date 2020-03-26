@@ -285,6 +285,47 @@ public class AppTest {
   }
 
 
+  @Test
+  public void deleteAnnuaireTest(){
+
+    Dao ad = null;
+    try {
+      ad = DaoFactory.getAnnuaireDao();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    Annuaire a = Annuaire.getInstance();
+    String tel = new String("00000000");
+    Groupe gg = new Groupe("PDGDelete");
+    Groupe g2 = new Groupe("VICE_PRESIDENTDelete");
+    List<String> tmp = new ArrayList<>();
+    tmp.add(tel);
+    tmp.add("12345678");
+    Personnel p1 =
+            new Personnel.Builder("SmithDeleteAnnuaire", "John", "ComputerScienist").updatePhoneList(tmp).build();
+    Personnel p2 = new Personnel.Builder("pgDeleteAnnuaire", "lp", "class").updatePhoneList(tmp).build();
+
+    gg.ajoutMembre(p1);
+    gg.ajoutMembre(p2);
+    g2.ajoutMembre(new Personnel.Builder("pgDeleteAnnuaire2", "lp", "class").updatePhoneList(tmp).build());
+    a.addEquipe(new Personnel.Builder("pgDeleteAnnuaire3", "lp", "class").updatePhoneList(tmp).build());
+    a.addEquipe(new Groupe("Groupe1DeleteAnnuaire"));
+    a.addEquipe(new Groupe("Groupe2DeleteAnnuaire"));
+    a.addEquipe(gg);
+    a.addEquipe(g2);
+    ad.create(a);
+    ad.delete("");
+    Annuaire res = (Annuaire)ad.find("");
+    int i = 0;
+    for(Equipe e : res){
+      i++;
+
+    }
+    System.out.println(i);
+    assertEquals(0, i, 0);
+
+
+  }
 
   @AfterClass
   public static void after(){

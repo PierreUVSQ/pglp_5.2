@@ -29,7 +29,7 @@ public class Annuaire implements Iterable<Equipe>, Serializable {
 
   @Override
   public Iterator<Equipe> iterator() {
-    return this.head.copy();
+    return this.head;
   }
 
   /**

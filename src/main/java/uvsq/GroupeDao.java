@@ -35,10 +35,12 @@ public class GroupeDao extends Dao<Groupe> {
           EquipeInsert.setString(2, e.getNom());
           EquipeInsert.executeUpdate();
 
-        } else if (e instanceof Groupe) {
+        } else if (e instanceof Iterable) {
           Annuaire.createChoisiDaoFactory("SGBD").createGroupeDao().create((Groupe) e);
           EquipeInsertG.setString(1, obj.getNom());
           EquipeInsertG.setString(2, e.getNom());
+          EquipeInsertG.executeUpdate();
+
         }
       }
     } catch (SQLException e) {

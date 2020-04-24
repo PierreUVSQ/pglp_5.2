@@ -48,20 +48,22 @@ public class PersonnelDao extends Dao<Personnel> {
         PreparedStatement selectTel =
             this.connect.prepareStatement("SELECT T.tel FROM Telephone T WHERE T.nom = ?"); ) {
       selectTel.setString(1, id);
-      ResultSet resTel = selectTel.executeQuery();
-      List<String> tel = new ArrayList<>();
-      while (resTel.next()) {
-        tel.add(String.valueOf(resTel.getInt("tel")));
-      }
-      select.setString(1, id);
-      ResultSet res = select.executeQuery();
-      if ((res.next())) {
-        p =
-            new Personnel.Builder(
-                    res.getString("nom"), res.getString("prenom"), res.getString("fonction"))
-                .updatePhoneList(tel)
-                .updateDateNaissance(res.getDate("naissance").toLocalDate())
-                .build();
+      try (ResultSet resTel = selectTel.executeQuery()) {
+        List<String> tel = new ArrayList<>();
+        while (resTel.next()) {
+          tel.add(String.valueOf(resTel.getInt("tel")));
+        }
+        select.setString(1, id);
+        try (ResultSet res = select.executeQuery()) {
+          if ((res.next())) {
+            p =
+                new Personnel.Builder(
+                        res.getString("nom"), res.getString("prenom"), res.getString("fonction"))
+                    .updatePhoneList(tel)
+                    .updateDateNaissance(res.getDate("naissance").toLocalDate())
+                    .build();
+          }
+        }
       }
     } catch (SQLException e) {
       e.printStackTrace();

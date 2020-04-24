@@ -20,6 +20,12 @@ public final class Personnel extends Equipe implements Serializable {
     private List<String> telephone = null;
     private java.time.LocalDate dateNaissance = java.time.LocalDate.now();
 
+    /**
+     * Constructeur pour le pattern Builder.
+     * @param nom Nom employe
+     * @param prenom Prenom employe
+     * @param fonction fonction employe
+     */
     public Builder(String nom, String prenom, String fonction) {
 
       this.nom = nom;
@@ -27,6 +33,11 @@ public final class Personnel extends Equipe implements Serializable {
       this.fonction = fonction;
     }
 
+    /**
+     * Modification liste telephone.
+     * @param phone numero de telephone
+     * @return Builder
+     */
     public Builder updatePhoneList(List<String> phone) {
 
       this.telephone = phone;
@@ -34,6 +45,11 @@ public final class Personnel extends Equipe implements Serializable {
       return this;
     }
 
+    /**
+     * Met à jour la date de naissance dasn le builder.
+     * @param t date
+     * @return Builder
+     */
     public Builder updateDateNaissance(java.time.LocalDate t) {
 
       this.dateNaissance = t;

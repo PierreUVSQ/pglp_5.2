@@ -23,6 +23,9 @@ public class Groupe extends Equipe implements Iterable<Equipe>, Serializable {
     return this.nom;
   }
 
+  /**
+   * Affiche le nom de l'equipe et de ceux qui la compose.
+   */
   public void printNom() {
     System.out.println(this.nom);
     for (Equipe e : this) {

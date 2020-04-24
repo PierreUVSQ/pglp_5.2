@@ -1,9 +1,8 @@
 package uvsq;
 
 import java.io.Serializable;
-import java.util.Iterator;
-import java.util.List;
 import java.lang.Iterable;
+import java.util.Iterator;
 
 public class Annuaire implements Iterable<Equipe>, Serializable {
 
@@ -22,8 +21,9 @@ public class Annuaire implements Iterable<Equipe>, Serializable {
    */
   public static Annuaire getInstance() {
 
-    if (ANNUAIRE == null) ANNUAIRE = new Annuaire();
-
+    if (ANNUAIRE == null) {
+      ANNUAIRE = new Annuaire();
+    }
     return ANNUAIRE;
   }
 
@@ -35,16 +35,21 @@ public class Annuaire implements Iterable<Equipe>, Serializable {
   /**
    * Ajout d'une équipe.
    *
-   * @param e
+   * @param e Equipe
    */
   public void addEquipe(Equipe e) {
 
     this.head.add(e);
   }
 
+  /**
+   * Fabrique abstraite Dao.
+   * @param choix SGBD ou serialization
+   * @return DaoFactory
+   */
   public static AbstractDaoFactory createChoisiDaoFactory(String choix) {
 
-    if (choix == "SGBD") {
+    if (choix.contentEquals("SGBD")) {
       return new DaoFactory();
     } else {
       return new SerialDaoFactory();

@@ -11,7 +11,7 @@ public class Node<T> implements Serializable {
   /**
    * Constructor.
    *
-   * @param element
+   * @param element Equipe
    */
   public Node(T element) {
 
@@ -21,7 +21,7 @@ public class Node<T> implements Serializable {
   /**
    * Ajoute élément récursivement.
    *
-   * @param suivant
+   * @param suivant Equipe
    */
   public void addElement(T suivant) {
 

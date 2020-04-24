@@ -1,22 +1,36 @@
 package uvsq;
 
-import java.io.*;
-import java.util.Iterator;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 public class SerializationAnnuaireDao extends Dao<Annuaire> {
 
-  // @Override
+  /**
+   * Creation de l'annuaire.
+   * @param obj annuaire
+   * @return annuaire
+   */
   public Annuaire create(Annuaire obj) {
     try (ObjectOutputStream out =
         new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream("annuaire")))) {
       out.writeObject(obj);
     } catch (IOException ioe) {
-
+      ioe.printStackTrace();
     }
     return obj;
   }
 
-  // @Override
+  /**
+   * Trouve l'annuaire.
+   * @param id fichier
+   * @return annuaire correspondant
+   */
   public Annuaire find(String id) {
     Annuaire p = Annuaire.getInstance();
     try (ObjectInputStream in =
@@ -30,7 +44,10 @@ public class SerializationAnnuaireDao extends Dao<Annuaire> {
     return p;
   }
 
-  // @Override
+  /**
+   * Supprime le fichier de l'annuaire.
+   * @param file fichier
+   */
   public void delete(String file) {
 
     try {

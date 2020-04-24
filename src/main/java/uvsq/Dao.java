@@ -17,6 +17,9 @@ public abstract class Dao<T> implements AutoCloseable {
 
   public abstract void delete(String id);
 
+  /**
+   * Etablie la connexion avec le SGBD.
+   */
   public void connect() {
 
     try {
@@ -32,6 +35,9 @@ public abstract class Dao<T> implements AutoCloseable {
     }
   }
 
+  /**
+   * Ferme la connexion avec le SGBD.
+   */
   public void disconnect() {
 
     try {

@@ -1,21 +1,36 @@
 package uvsq;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 public class SerializationGroupeDao extends Dao<Groupe> {
 
-  // @Override
+  /**
+   * Create du DAO.
+   * @param obj objet
+   * @return groupe
+   */
   public Groupe create(Groupe obj) {
     try (ObjectOutputStream out =
         new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(obj.getNom())))) {
       out.writeObject(obj);
     } catch (IOException ioe) {
-
+      ioe.printStackTrace();
     }
     return obj;
   }
 
-  // @Override
+  /**
+   * Find du DAO.
+   * @param id objet
+   * @return groupe
+   */
   public Groupe find(String id) {
     Groupe g = null;
     try (ObjectInputStream in =
@@ -29,7 +44,10 @@ public class SerializationGroupeDao extends Dao<Groupe> {
     return g;
   }
 
-  // @Override
+  /**
+   * Delete du DAO.
+   * @param file objet
+   */
   public void delete(String file) {
 
     try {

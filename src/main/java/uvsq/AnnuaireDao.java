@@ -7,12 +7,12 @@ import java.sql.SQLException;
 public class AnnuaireDao extends Dao<Annuaire> {
 
   private Dao ag;
-  private Dao aGroupe;
+  private Dao agroupe;
 
   protected AnnuaireDao() {
 
     ag = Annuaire.createChoisiDaoFactory("SGBD").createPersonnelDao();
-    aGroupe = Annuaire.createChoisiDaoFactory("SGBD").createGroupeDao();
+    agroupe = Annuaire.createChoisiDaoFactory("SGBD").createGroupeDao();
   }
 
   @Override
@@ -63,7 +63,7 @@ public class AnnuaireDao extends Dao<Annuaire> {
       stmt.execute(selectItGroupe);
       ResultSet resItG = stmt.getResultSet();
       while (resItG.next()) {
-        p.addEquipe((Groupe) this.aGroupe.find(resItG.getString("gnom")));
+        p.addEquipe((Groupe) this.agroupe.find(resItG.getString("gnom")));
       }
 
     } catch (SQLException e) {

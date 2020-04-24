@@ -6,11 +6,11 @@ import java.util.Iterator;
 public class EquipeIterator<Equipe> implements Iterator<Equipe>, Serializable {
 
   private int index;
-  private Node<Equipe> e;
+  private Node<Equipe> elem;
 
   @Override
   public boolean hasNext() {
-    if (e != null) {
+    if (elem != null) {
       return true;
     }
     return false;
@@ -18,25 +18,33 @@ public class EquipeIterator<Equipe> implements Iterator<Equipe>, Serializable {
 
   @Override
   public Equipe next() {
-    Equipe tmp = e.getElement();
-    e = e.getNext();
+    Equipe tmp = elem.getElement();
+    elem = elem.getNext();
     index++;
     return tmp;
   }
 
+  /**
+   * Ajout élément.
+   * @param n equipe
+   */
   public void add(Equipe n) {
 
-    if (e == null) {
-      this.e = new Node<Equipe>(n);
+    if (elem == null) {
+      this.elem = new Node<Equipe>(n);
     } else {
 
-      this.e.addElement(n);
+      this.elem.addElement(n);
     }
   }
 
+  /**
+   * Retourne une copie du header.
+   * @return copie du header
+   */
   public EquipeIterator<Equipe> copy() {
     EquipeIterator<Equipe> res = new EquipeIterator<>();
-    res.e = this.e;
+    res.elem = this.elem;
     return res;
   }
 }

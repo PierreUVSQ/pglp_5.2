@@ -168,6 +168,7 @@ public class AppTest {
     ad.create(a);
 
     Annuaire test = (Annuaire) ad.find("annuaire");
+    System.out.println("here");
     for (Equipe e : test) {
       e.printNom();
     }

@@ -33,4 +33,10 @@ public class EquipeIterator<Equipe> implements Iterator<Equipe>, Serializable {
       this.e.addElement(n);
     }
   }
+
+  public EquipeIterator<Equipe> copy() {
+    EquipeIterator<Equipe> res = new EquipeIterator<>();
+    res.e = this.e;
+    return res;
+  }
 }

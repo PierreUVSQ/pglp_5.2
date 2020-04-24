@@ -32,7 +32,7 @@ public class Groupe extends Equipe implements Iterable<Equipe>, Serializable {
 
   @Override
   public Iterator<Equipe> iterator() {
-
-    return this.head;
+    EquipeIterator<Equipe> t = this.head.copy();
+    return t;
   }
 }
